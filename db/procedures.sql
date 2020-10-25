@@ -1,15 +1,14 @@
-USE company;
-
 DELIMITER $$
-USE `company`$$
-
-CREATE PROCEDURE `employeeAddOrEdit` (
+CREATE DEFINER=`root`@`localhost` PROCEDURE `employeeAddOrEdit`(
   IN _id INT,
   IN _name VARCHAR(45),
   IN _salary INT
 )
 BEGIN 
-  IF _id = 0 THEN
+
+DECLARE affected_rows int;
+
+  IF _id is null THEN
     INSERT INTO employee (name, salary)
     VALUES (_name, _salary);
 
@@ -22,5 +21,13 @@ BEGIN
     WHERE id = _id;
   END IF;
 
-  SELECT _id AS 'id';
-END
+	SET affected_rows = ROW_COUNT();
+    
+    if (affected_rows = 1) then
+  -- SELECT _id AS 'id';
+		SELECT * from employee where id = _id;
+	else
+		select 0 as id;
+	end if;
+END$$
+DELIMITER ;
